@@ -1,6 +1,6 @@
 # myapp
 
-A new Flutter project.
+App Flutter - Communication between webview and device's native camera with dart and javascript.
 
 ## Getting Started
 
