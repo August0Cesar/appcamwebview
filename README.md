@@ -1,4 +1,4 @@
-# myapp
+# appcamwebview
 
 App Flutter - Communication between webview and device's native camera with dart and javascript.
 
