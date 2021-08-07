@@ -3,14 +3,20 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'dart:io';
 import 'dart:convert';
 import 'package:image_picker/image_picker.dart';
+import 'package:myapp/webview/audio_channel_controlller.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
       FlutterWebviewPlugin flutterWebviewPlugin) {
     _TakePhotograph takePhoto = _TakePhotograph(flutterWebviewPlugin);
+    AudioChannelController audioChannel =
+        AudioChannelController(flutterWebviewPlugin);
 
     return Set.from(
-      [takePhoto.getChannel()],
+      [
+        takePhoto.getChannel(),
+        audioChannel.getChannel(),
+      ],
     );
   }
 }
@@ -35,7 +41,8 @@ class _TakePhotograph implements WebViewJSChannelController {
     final bytesFromImage = File(_storedImage.path).readAsBytesSync();
     String img64 = base64Encode(bytesFromImage);
 
-    _flutterWebviewPlugin.evalJavascript('alertValueFromFlutter("$img64")');
+    await _flutterWebviewPlugin
+        .evalJavascript('alertValueFromFlutter("$img64")');
     _flutterWebviewPlugin.show();
   }
 
