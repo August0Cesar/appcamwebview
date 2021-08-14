@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 import 'dart:io';
@@ -7,7 +8,7 @@ import 'package:myapp/webview/audio_channel_controlller.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
-      FlutterWebviewPlugin flutterWebviewPlugin) {
+      FlutterWebviewPlugin flutterWebviewPlugin, State myHome) {
     _TakePhotograph takePhoto = _TakePhotograph(flutterWebviewPlugin);
     AudioChannelController audioChannel =
         AudioChannelController(flutterWebviewPlugin);

@@ -33,17 +33,31 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final flutterWebviewPlugin = new FlutterWebviewPlugin();
+  AppLifecycleState _appLifecycleState;
+
+  AppLifecycleState get getAppLifecycleState {
+    return _appLifecycleState;
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    setState(() {
+      _appLifecycleState = state;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
   }
 
   @override
   void dispose() {
     flutterWebviewPlugin.dispose();
+    WidgetsBinding.instance.addObserver(this);
     super.dispose();
   }
 
@@ -79,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage>
 
       javascriptChannels: ChannelController.getChannels(
         flutterWebviewPlugin,
+        this,
       ),
       initialChild: Container(
         color: Colors.white,

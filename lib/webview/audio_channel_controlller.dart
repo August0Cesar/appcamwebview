@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:myapp/webview/webview_channel_controller.dart';
@@ -93,6 +94,11 @@ class AudioChannelController implements WebViewJSChannelController {
         var result_js =
             await _flutterWebviewPlugin.evalJavascript('isActiveWebView()');
         print(result_js);
+
+        // if (_myHome == AppLifecycleState.paused) {
+        //   print("segundo plano");
+        //   await _stop();
+        // }
 
         if (result_js == null || result_js == "null") {
           await _stop();
