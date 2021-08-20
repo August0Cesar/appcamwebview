@@ -2,7 +2,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_audio_recorder/flutter_audio_recorder.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:myapp/service/audio_service_mp3.dart';
 import 'package:myapp/service/service_audio.dart';
+import 'package:record_mp3/record_mp3.dart';
 import 'webview/webview_channel_controller.dart';
 
 Future<void> main() async {
@@ -37,14 +39,15 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final flutterWebviewPlugin = new FlutterWebviewPlugin();
-  AudioService audioService = AudioService();
+  // AudioService audioService = AudioService();
+  AudioServiceMP3 audioService = AudioServiceMP3();
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     setState(() {
       //App segundo plano parar gravação
       if (state == AppLifecycleState.paused &&
-          audioService.statusRecording() == RecordingStatus.Recording) {
+          audioService.statusRecording() == RecordStatus.RECORDING) {
         audioService.stop(isBackgroundApp: true);
       }
     });

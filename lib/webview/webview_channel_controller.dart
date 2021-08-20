@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
-import 'package:myapp/service/service_audio.dart';
+import 'package:myapp/service/audio_service_mp3.dart';
+// import 'package:myapp/service/service_audio.dart';
 import 'package:myapp/webview/webview.channel_photo.dart';
 
 import 'package:myapp/webview/webview_channel_audio.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
-      FlutterWebviewPlugin flutterWebviewPlugin, AudioService audioService) {
+      FlutterWebviewPlugin flutterWebviewPlugin, AudioServiceMP3 audioService) {
     TakePhotograph takePhoto = TakePhotograph(flutterWebviewPlugin);
     AudioChannelController audioChannel =
         AudioChannelController(flutterWebviewPlugin, audioService);

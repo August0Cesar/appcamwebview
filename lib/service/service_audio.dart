@@ -39,11 +39,10 @@ class AudioService {
 
         await _recorder.initialized;
         var current = await _recorder.current(channel: 0);
-        print(current);
 
         _current = current;
         _currentStatus = current.status;
-        print(_currentStatus);
+
         start(flutterWebviewPlugin);
       } else {
         _onError(flutterWebviewPlugin, NOT_PERMISSION_RECORDING);

@@ -28,6 +28,10 @@ dependencies:
   path:
   image_picker: ^0.8.2
   flutter_webview_plugin: ^0.3.10+1
+  
+  #audio
+  permission_handler: ^8.1.4+2
+  record_mp3: ^3.0.0
 
 
   # The following adds the Cupertino Icons font to your application.
