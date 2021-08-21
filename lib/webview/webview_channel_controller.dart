@@ -4,7 +4,9 @@ import 'package:myapp/webview/webview.channel_photo.dart';
 
 import 'package:myapp/webview/webview_channel_audio.dart';
 import 'package:myapp/webview/webview_channel_permission.dart';
+import 'package:myapp/webview/webview_channel_play_record.dart';
 import 'package:myapp/webview/webview_channel_situation.dart';
+import 'package:myapp/webview/webview_channel_stop_record.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
@@ -14,6 +16,10 @@ class ChannelController {
         AudioChannelController(flutterWebviewPlugin, audioService);
 
     //Novos Channels
+    StopAudioRecorder stopAudioRecorder =
+        StopAudioRecorder(flutterWebviewPlugin, audioService);
+    PlayAudioRecorder playAudioRecorder =
+        PlayAudioRecorder(flutterWebviewPlugin, audioService);
     GetPermission getPermission = GetPermission(flutterWebviewPlugin);
     GetSituation getSituation =
         GetSituation(flutterWebviewPlugin, audioService);
@@ -25,7 +31,9 @@ class ChannelController {
 
         //Novos Channels
         getSituation.getChannel(),
-        getPermission.getChannel()
+        getPermission.getChannel(),
+        playAudioRecorder.getChannel(),
+        stopAudioRecorder.getChannel()
       ],
     );
   }
