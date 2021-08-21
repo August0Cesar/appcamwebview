@@ -1,10 +1,10 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:myapp/service/audio_service_mp3.dart';
-// import 'package:myapp/service/service_audio.dart';
 import 'package:myapp/webview/webview.channel_photo.dart';
 
 import 'package:myapp/webview/webview_channel_audio.dart';
+import 'package:myapp/webview/webview_channel_permission.dart';
+import 'package:myapp/webview/webview_channel_situation.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
@@ -13,10 +13,19 @@ class ChannelController {
     AudioChannelController audioChannel =
         AudioChannelController(flutterWebviewPlugin, audioService);
 
+    //Novos Channels
+    GetPermission getPermission = GetPermission(flutterWebviewPlugin);
+    GetSituation getSituation =
+        GetSituation(flutterWebviewPlugin, audioService);
+
     return Set.from(
       [
         takePhoto.getChannel(),
         audioChannel.getChannel(),
+
+        //Novos Channels
+        getSituation.getChannel(),
+        getPermission.getChannel()
       ],
     );
   }

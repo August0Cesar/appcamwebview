@@ -12,13 +12,18 @@ const ERROR_RECORD = "Erro interno ao gravar o audio";
 const AUDIO_IN_RECORDING = "Audio já esta em gravação";
 const NOT_PERMISSION_RECORDING = "Applicativo sem permissão para gravar audio";
 
+const RECORDING = "Recording";
+const STOPPED = "Stopped";
+const SENDING = "Sending";
+
 class AudioServiceMP3 {
   bool isComplete = false;
   String recordFilePath;
 
   init(FlutterWebviewPlugin flutterWebviewPlugin) async {
     try {
-      bool hasPermissionRecordAndWriteInDevice = await _isCanWriteInDevice();
+      bool hasPermissionRecordAndWriteInDevice =
+          await isCanRecordAudioAndWriteInDevice();
       // if (_isCanRecordAudio()) {
       //   _onError(flutterWebviewPlugin, AUDIO_IN_RECORDING);
       //   return;
@@ -62,19 +67,26 @@ class AudioServiceMP3 {
 
   findStatusRecordingFromJS(FlutterWebviewPlugin flutterWebviewPlugin) async {
     if (RecordMp3.instance.status == RecordStatus.IDEL) {
-      await flutterWebviewPlugin.evalJavascript(
-          'onRecivedStatusRecording("${JSAudioStatus.Stopped.toString()}")');
+      await flutterWebviewPlugin
+          .evalJavascript('onRecivedStatusRecording("$STOPPED")');
       return;
     }
 
     if (RecordMp3.instance.status == RecordStatus.RECORDING) {
-      await flutterWebviewPlugin.evalJavascript(
-          'onRecivedStatusRecording("${JSAudioStatus.Recording.toString()}")');
+      await flutterWebviewPlugin
+          .evalJavascript('onRecivedStatusRecording("$RECORDING")');
       return;
     }
 
     //TODO implementar enviando
     //Obs.: Falta a API
+  }
+
+  String getSituation() {
+    if (RecordMp3.instance.status == RecordStatus.RECORDING) {
+      return RECORDING;
+    }
+    return STOPPED;
   }
 
   stop({isBackgroundApp = false}) async {
@@ -111,7 +123,7 @@ class AudioServiceMP3 {
     return RecordMp3.instance.status;
   }
 
-  Future<bool> _isCanWriteInDevice() async {
+  Future<bool> isCanRecordAudioAndWriteInDevice() async {
     if (!await Permission.microphone.isGranted) {
       PermissionStatus status = await Permission.microphone.request();
       if (status != PermissionStatus.granted) {
@@ -136,5 +148,3 @@ class AudioServiceMP3 {
     }
   }
 }
-
-enum JSAudioStatus { Recording, Stopped, Sending }
