@@ -3,6 +3,7 @@ import 'package:myapp/service/audio_service_mp3.dart';
 import 'package:myapp/webview/webview.channel_photo.dart';
 
 import 'package:myapp/webview/webview_channel_audio.dart';
+import 'package:myapp/webview/webview_channel_cancel_record.dart';
 import 'package:myapp/webview/webview_channel_permission.dart';
 import 'package:myapp/webview/webview_channel_play_record.dart';
 import 'package:myapp/webview/webview_channel_situation.dart';
@@ -20,6 +21,8 @@ class ChannelController {
         StopAudioRecorder(flutterWebviewPlugin, audioService);
     PlayAudioRecorder playAudioRecorder =
         PlayAudioRecorder(flutterWebviewPlugin, audioService);
+    CancelAudioRecorder cancelAudioRecorder =
+        CancelAudioRecorder(flutterWebviewPlugin, audioService);
     GetPermission getPermission = GetPermission(flutterWebviewPlugin);
     GetSituation getSituation =
         GetSituation(flutterWebviewPlugin, audioService);
@@ -33,7 +36,8 @@ class ChannelController {
         getSituation.getChannel(),
         getPermission.getChannel(),
         playAudioRecorder.getChannel(),
-        stopAudioRecorder.getChannel()
+        stopAudioRecorder.getChannel(),
+        cancelAudioRecorder.getChannel()
       ],
     );
   }

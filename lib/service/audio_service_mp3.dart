@@ -6,9 +6,12 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:record_mp3/record_mp3.dart';
+import 'package:http/http.dart' as http;
 
 const ERROR_STOP_RECORDING = "Erro ao tentar parar gravação";
 const ERROR_SENDING_RECORDING = "Erro ao tentar enviar a gravação para API";
+const ERROR_CANCEL_RECORDING = "Erro ao tentar cancelar a gravação";
+const ERROR_ALREADY_RECORDING = "Já existe uma gravação em curso";
 
 const NOT_PERMISSION_RECORDING = "Applicativo sem permissão para gravar audio";
 
@@ -48,12 +51,25 @@ class AudioServiceMP3 {
 
     if (isBackgroundApp) {
       try {
-        await io.File(recordFilePath).delete();
+        if (await io.File(recordFilePath).exists()) {
+          await io.File(recordFilePath).delete();
+        }
         print("Deleted recording: " + recordFilePath);
-        return;
       } catch (e) {
-        print("Error ao deletar gravação---->" + e);
+        print("Error ao deletar gravação---->" + e.toString());
       }
+      return;
+    }
+  }
+
+  cancelRecoderAudio(
+      {FlutterWebviewPlugin flutterWebviewPlugin,
+      String onCancelCallback,
+      String onErrorCallback}) async {
+    stop(isBackgroundApp: true);
+    if (isComplete) {
+      flutterWebviewPlugin
+          .evalJavascript('$onErrorCallback("$ERROR_CANCEL_RECORDING")');
     }
   }
 
@@ -66,7 +82,11 @@ class AudioServiceMP3 {
       bool hasPermissionRecordAndWriteInDevice =
           await _isCanRecordAudioAndWriteInDevice();
 
-      //TODO validar se já exite uma gravação em curso
+      if (RecordMp3.instance.status == RecordStatus.RECORDING) {
+        flutterWebviewPlugin
+            .evalJavascript('$onErrorCallback("$ERROR_ALREADY_RECORDING")');
+        return;
+      }
 
       if (hasPermissionRecordAndWriteInDevice) {
         recordFilePath = await _getFilePath();
@@ -114,6 +134,8 @@ class AudioServiceMP3 {
     if (recordFilePath != null && io.File(recordFilePath).existsSync()) {
       AudioPlayer audioPlayer = AudioPlayer();
       audioPlayer.play(recordFilePath, isLocal: true);
+    } else {
+      recordFilePath = null;
     }
   }
 
@@ -127,7 +149,8 @@ class AudioServiceMP3 {
     if (io.Platform.isIOS) {
       appDocDirectory = await getApplicationDocumentsDirectory();
     } else {
-      appDocDirectory = await getExternalStorageDirectory();
+      //TODO possibilidade de não grava em disco o audio
+      appDocDirectory = await getApplicationDocumentsDirectory();
     }
     return appDocDirectory.path +
         customPath +
@@ -137,8 +160,22 @@ class AudioServiceMP3 {
 
   _sendingAudioToAPI({Map sendParameters}) async {
     print("Enviando audio para API...");
-    //TODO codigo para implemtar a requisiçao
-    return true;
+    String method = sendParameters["method"];
+    String token = sendParameters["token"];
+    Map<String, String> headers = <String, String>{'Authorization': token};
+
+    var uri = Uri.parse(sendParameters["url"]);
+    var request = http.MultipartRequest(method, uri)
+      ..headers.addAll(headers)
+      ..files.add(await http.MultipartFile.fromPath("file", recordFilePath));
+
+    try {
+      var response = await request.send();
+      return response.statusCode == 200;
+    } catch (e) {
+      print("Error ao enviar para API ---->" + e.toString());
+      return false;
+    }
   }
 
   Future<bool> _isCanRecordAudioAndWriteInDevice() async {
