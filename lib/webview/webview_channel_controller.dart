@@ -12,9 +12,8 @@ import 'package:myapp/webview/webview_channel_stop_record.dart';
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
       FlutterWebviewPlugin flutterWebviewPlugin, AudioServiceMP3 audioService) {
-    TakePhotograph takePhoto = TakePhotograph(flutterWebviewPlugin);
-    AudioChannelController audioChannel =
-        AudioChannelController(flutterWebviewPlugin, audioService);
+    // TakePhotograph takePhoto = TakePhotograph(flutterWebviewPlugin);
+    AudioChannelController audioChannel = AudioChannelController(audioService);
 
     //Novos Channels
     StopAudioRecorder stopAudioRecorder =
@@ -29,7 +28,7 @@ class ChannelController {
 
     return Set.from(
       [
-        takePhoto.getChannel(),
+        // takePhoto.getChannel(),
         audioChannel.getChannel(),
 
         //Novos Channels

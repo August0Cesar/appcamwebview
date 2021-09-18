@@ -3,9 +3,9 @@ import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:myapp/webview/webview_channel_controller.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-const ALLOWED = "Allowed";
-const DENIED = "Denied";
-const PENDING = "Pending";
+const ALLOWED = 1;
+const DENIED = 0;
+const NOT_REQUEST = -1;
 
 class GetPermission implements WebViewJSChannelController {
   FlutterWebviewPlugin _flutterWebviewPlugin;
@@ -21,18 +21,14 @@ class GetPermission implements WebViewJSChannelController {
   }
 
   void _onMessage(JavascriptMessage message) async {
-    String permission = PENDING;
+    int permission = NOT_REQUEST;
     var messageJson = json.decode(message.message);
     String callbackFunction = messageJson["onCalback"];
 
+    PermissionStatus status = await Permission.microphone.status;
     if (!await Permission.microphone.isGranted) {
-      PermissionStatus status = await Permission.microphone.status;
-      if (status != PermissionStatus.granted ||
-          status != PermissionStatus.limited) {
-        permission = ALLOWED;
-      }
-      if (status != PermissionStatus.denied ||
-          status != PermissionStatus.permanentlyDenied) {
+      if (status == PermissionStatus.denied ||
+          status == PermissionStatus.permanentlyDenied) {
         permission = DENIED;
       }
     } else {

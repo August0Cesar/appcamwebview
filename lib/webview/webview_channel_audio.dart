@@ -3,12 +3,9 @@ import 'package:myapp/service/audio_service_mp3.dart';
 import 'package:myapp/webview/webview_channel_controller.dart';
 
 class AudioChannelController implements WebViewJSChannelController {
-  FlutterWebviewPlugin _flutterWebviewPlugin;
   AudioServiceMP3 _audioService;
 
-  AudioChannelController(
-      FlutterWebviewPlugin flutterWebviewPlugin, AudioServiceMP3 audioService) {
-    _flutterWebviewPlugin = flutterWebviewPlugin;
+  AudioChannelController(AudioServiceMP3 audioService) {
     _audioService = audioService;
   }
   @override

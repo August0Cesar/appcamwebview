@@ -23,6 +23,7 @@ class StopAudioRecorder implements WebViewJSChannelController {
 
   void _onMessage(JavascriptMessage message) async {
     Map messageJson = json.decode(message.message);
+    // Map<String, String> headers = messageJson["sendParameter"]
 
     await _audioService.stopRecoderAudio(
         flutterWebviewPlugin: _flutterWebviewPlugin,

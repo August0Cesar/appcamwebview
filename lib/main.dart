@@ -37,7 +37,6 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage>
     with SingleTickerProviderStateMixin, WidgetsBindingObserver {
   final flutterWebviewPlugin = new FlutterWebviewPlugin();
-  // AudioService audioService = AudioService();
   AudioServiceMP3 audioService = AudioServiceMP3();
 
   @override

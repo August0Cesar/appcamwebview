@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:io' as io;
 
 import 'package:audioplayers/audioplayers.dart';
@@ -28,7 +29,7 @@ class AudioServiceMP3 {
       String onSentCallback,
       String onStopCallback,
       String onErrorCallback,
-      Map sendParameters}) async {
+      Map<String, dynamic> sendParameters}) async {
     stop(isBackgroundApp: false);
     if (isComplete) {
       flutterWebviewPlugin.evalJavascript('$onStopCallback(true)');
@@ -50,14 +51,7 @@ class AudioServiceMP3 {
     isComplete = true;
 
     if (isBackgroundApp) {
-      try {
-        if (await io.File(recordFilePath).exists()) {
-          await io.File(recordFilePath).delete();
-        }
-        print("Deleted recording: " + recordFilePath);
-      } catch (e) {
-        print("Error ao deletar gravação---->" + e.toString());
-      }
+      _deleteRecordedAudioFile();
       return;
     }
   }
@@ -82,6 +76,7 @@ class AudioServiceMP3 {
       bool hasPermissionRecordAndWriteInDevice =
           await _isCanRecordAudioAndWriteInDevice();
 
+      //TODO validar se o audio esta sendo usado por outro app
       if (RecordMp3.instance.status == RecordStatus.RECORDING) {
         flutterWebviewPlugin
             .evalJavascript('$onErrorCallback("$ERROR_ALREADY_RECORDING")');
@@ -149,7 +144,6 @@ class AudioServiceMP3 {
     if (io.Platform.isIOS) {
       appDocDirectory = await getApplicationDocumentsDirectory();
     } else {
-      //TODO possibilidade de não grava em disco o audio
       appDocDirectory = await getApplicationDocumentsDirectory();
     }
     return appDocDirectory.path +
@@ -158,11 +152,12 @@ class AudioServiceMP3 {
         ".mp3";
   }
 
-  _sendingAudioToAPI({Map sendParameters}) async {
+  _sendingAudioToAPI({Map<String, dynamic> sendParameters}) async {
     print("Enviando audio para API...");
+    var response;
     String method = sendParameters["method"];
-    String token = sendParameters["token"];
-    Map<String, String> headers = <String, String>{'Authorization': token};
+    Map<String, String> headers = HashMap();
+    sendParameters["header"].forEach((k, v) => {headers[k] = v});
 
     var uri = Uri.parse(sendParameters["url"]);
     var request = http.MultipartRequest(method, uri)
@@ -170,12 +165,25 @@ class AudioServiceMP3 {
       ..files.add(await http.MultipartFile.fromPath("file", recordFilePath));
 
     try {
-      var response = await request.send();
-      return response.statusCode == 200;
+      response = await request.send();
     } catch (e) {
       print("Error ao enviar para API ---->" + e.toString());
       return false;
     }
+    _deleteRecordedAudioFile();
+    return response.statusCode == 200;
+  }
+
+  _deleteRecordedAudioFile() async {
+    try {
+      if (await io.File(recordFilePath).exists()) {
+        await io.File(recordFilePath).delete();
+      }
+      print("Deleted recording: " + recordFilePath);
+    } catch (e) {
+      print("Error ao deletar gravação---->" + e.toString());
+    }
+    return;
   }
 
   Future<bool> _isCanRecordAudioAndWriteInDevice() async {
