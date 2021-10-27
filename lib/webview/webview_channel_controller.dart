@@ -1,52 +1,44 @@
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:myapp/service/audio_service_mp3.dart';
+import 'package:myapp/webview/webview.channel_photo.dart';
 
-import 'dart:io';
-import 'dart:convert';
-import 'package:image_picker/image_picker.dart';
+import 'package:myapp/webview/webview_channel_audio.dart';
+import 'package:myapp/webview/webview_channel_cancel_record.dart';
+import 'package:myapp/webview/webview_channel_permission.dart';
+import 'package:myapp/webview/webview_channel_play_record.dart';
+import 'package:myapp/webview/webview_channel_situation.dart';
+import 'package:myapp/webview/webview_channel_stop_record.dart';
 
 class ChannelController {
   static Set<JavascriptChannel> getChannels(
-      FlutterWebviewPlugin flutterWebviewPlugin) {
-    _TakePhotograph takePhoto = _TakePhotograph(flutterWebviewPlugin);
+      FlutterWebviewPlugin flutterWebviewPlugin, AudioServiceMP3 audioService) {
+    // TakePhotograph takePhoto = TakePhotograph(flutterWebviewPlugin);
+    AudioChannelController audioChannel = AudioChannelController(audioService);
+
+    //Novos Channels
+    StopAudioRecorder stopAudioRecorder =
+        StopAudioRecorder(flutterWebviewPlugin, audioService);
+    PlayAudioRecorder playAudioRecorder =
+        PlayAudioRecorder(flutterWebviewPlugin, audioService);
+    CancelAudioRecorder cancelAudioRecorder =
+        CancelAudioRecorder(flutterWebviewPlugin, audioService);
+    GetPermission getPermission = GetPermission(flutterWebviewPlugin);
+    GetSituation getSituation =
+        GetSituation(flutterWebviewPlugin, audioService);
 
     return Set.from(
-      [takePhoto.getChannel()],
+      [
+        // takePhoto.getChannel(),
+        audioChannel.getChannel(),
+
+        //Novos Channels
+        getSituation.getChannel(),
+        getPermission.getChannel(),
+        playAudioRecorder.getChannel(),
+        stopAudioRecorder.getChannel(),
+        cancelAudioRecorder.getChannel()
+      ],
     );
-  }
-}
-
-class _TakePhotograph implements WebViewJSChannelController {
-  FlutterWebviewPlugin _flutterWebviewPlugin;
-
-  _TakePhotograph(FlutterWebviewPlugin flutterWebviewPlugin) {
-    _flutterWebviewPlugin = flutterWebviewPlugin;
-  }
-
-  File _storedImage;
-
-  _takePicture() async {
-    final ImagePicker _picker = ImagePicker();
-    PickedFile imageFile =
-        await _picker.getImage(source: ImageSource.camera, maxWidth: 600);
-    if (imageFile == null) return;
-
-    _storedImage = File(imageFile.path);
-
-    final bytesFromImage = File(_storedImage.path).readAsBytesSync();
-    String img64 = base64Encode(bytesFromImage);
-
-    _flutterWebviewPlugin.evalJavascript('alertValueFromFlutter("$img64")');
-    _flutterWebviewPlugin.show();
-  }
-
-  @override
-  JavascriptChannel getChannel() {
-    return JavascriptChannel(
-        name: 'Print',
-        onMessageReceived: (JavascriptMessage message) {
-          _flutterWebviewPlugin.hide();
-          _takePicture();
-        });
   }
 }
 
