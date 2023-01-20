@@ -33,13 +33,13 @@ class AudioServiceMP3 {
     stop(isBackgroundApp: false);
     if (isComplete) {
       flutterWebviewPlugin.evalJavascript('$onStopCallback(true)');
-      bool isSent = await _sendingAudioToAPI(sendParameters: sendParameters);
-      if (isSent) {
-        flutterWebviewPlugin.evalJavascript('$onSentCallback(true)');
-      } else {
-        flutterWebviewPlugin
-            .evalJavascript('$onErrorCallback("$ERROR_SENDING_RECORDING")');
-      }
+      // bool isSent = await _sendingAudioToAPI(sendParameters: sendParameters);
+      // if (isSent) {
+      //   flutterWebviewPlugin.evalJavascript('$onSentCallback(true)');
+      // } else {
+      //   flutterWebviewPlugin
+      //       .evalJavascript('$onErrorCallback("$ERROR_SENDING_RECORDING")');
+      // }
     } else {
       flutterWebviewPlugin
           .evalJavascript('$onErrorCallback("$ERROR_STOP_RECORDING")');

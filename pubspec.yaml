@@ -23,16 +23,19 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  platform: ^3.1.0
   camera:
   path_provider:
   path:
   image_picker: ^0.8.2
-  flutter_webview_plugin: ^0.3.10+1
+  # flutter_webview_plugin: ^0.3.10+1
+  flutter_webview_plugin:
+    git: https://github.com/August0Cesar/flutter_webview_plugin
   
   #audio
   permission_handler: ^8.1.4+2
   record_mp3: ^3.0.0
-  audioplayers: ^0.16.1
+  audioplayers: ^0.18.3
   http: ^0.13.3
 
   # The following adds the Cupertino Icons font to your application.
@@ -86,3 +89,5 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+module:
+  androidX: true
